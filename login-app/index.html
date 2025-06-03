@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div id="app" class="bg-white p-6 rounded shadow-md w-80">
+    <h1 class="text-2xl font-bold mb-4 text-center">Login</h1>
+    <form @submit.prevent="login">
+      <div class="mb-4">
+        <label class="block mb-1" for="username">Username</label>
+        <input v-model="username" id="username" type="text" class="w-full border rounded px-3 py-2">
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1" for="password">Password</label>
+        <input v-model="password" id="password" type="password" class="w-full border rounded px-3 py-2">
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Login</button>
+    </form>
+    <p v-if="message" class="mt-4 text-center" :class="{ 'text-green-600': success, 'text-red-600': !success }">{{ message }}</p>
+  </div>
+
+  <script>
+  const { createApp } = Vue;
+  createApp({
+    data() {
+      return {
+        username: '',
+        password: '',
+        message: '',
+        success: false
+      };
+    },
+    methods: {
+      async login() {
+        try {
+          const res = await fetch('users.json');
+          const users = await res.json();
+          const match = users.find(u => u.username === this.username && u.password === this.password);
+          if (match) {
+            this.message = 'Login successful!';
+            this.success = true;
+          } else {
+            this.message = 'Invalid credentials';
+            this.success = false;
+          }
+        } catch (err) {
+          this.message = 'Error loading user data';
+          this.success = false;
+        }
+      }
+    }
+  }).mount('#app');
+  </script>
+</body>
+</html>
